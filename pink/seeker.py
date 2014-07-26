@@ -76,12 +76,12 @@ def worker(peer):
         elif seeker in socks and socks[seeker] == zmq.POLLIN:
             response = seeker.recv()
             if response == 'CORRECT':
-                print 'Won', city
+                print 'Won'
                 break
         elif seeker in socks and socks[seeker] == zmq.POLLIN | zmq.POLLOUT:
             response = seeker.recv()
             if response == 'CORRECT':
-                print 'Won', city
+                print 'Won'
                 break
             try:
                 city = next(gen)
