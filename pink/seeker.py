@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import csv
 import functools
 import time
 import threading
@@ -37,14 +38,24 @@ peers = socket.recv_multipart()[0].split(' ')
 cities = """Berlin
 London
 Paris
+Barcelona
 Dublin
 """.splitlines()
 
 
 def get_cities():
-    for c in cities:
-        if c:
-            yield c
+    """
+    https://www.maxmind.com/en/worldcities
+    """
+    with open('worldcitiespop.txt', 'rb') as openfile:
+        reader = csv.reader(openfile)
+        for row in reader:
+            yield row[1]
+
+# def get_cities():
+#     for c in cities:
+#         if c:
+#             yield c
 
 
 def worker(peer):
@@ -54,7 +65,7 @@ def worker(peer):
     poller.register(seeker, zmq.POLLIN | zmq.POLLOUT)
     gen = get_cities()
     while True:
-        socks = dict(poller.poll(timeout=5000))
+        socks = dict(poller.poll(timeout=1000))
         if seeker in socks and socks[seeker] == zmq.POLLOUT:
             try:
                 city = next(gen)
