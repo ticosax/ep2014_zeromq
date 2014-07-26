@@ -3,7 +3,6 @@
 import argparse
 import csv
 import functools
-import time
 import threading
 
 import zmq
@@ -94,7 +93,6 @@ def worker(peer):
         else:
             print 'timeout'
             break
-        time.sleep(.1)
 
 
 for peer in peers:
