@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse
+import functools
 import zmq
 from zmq.eventloop import ioloop, zmqstream
 
@@ -7,8 +8,6 @@ from zmq.eventloop import ioloop, zmqstream
 io_loop = ioloop.IOLoop()
 
 context = zmq.Context()
-
-CITY = None
 
 
 def get_ip():
@@ -20,11 +19,10 @@ def get_ip():
     return ip
 
 
-def guess(stream, message):
-    print message
-    city = message[1]
+def guess(CITY, stream, message):
+    peer_id, city = message
     reply = "CORRECT" if city.lower() == CITY.lower() else "INCORRECT"
-    stream.send_multipart([message[0], reply])
+    stream.send_multipart([peer_id, reply])
 
 
 parser = argparse.ArgumentParser()
@@ -46,6 +44,6 @@ print sock.recv_multipart()
 CITY = args.city
 sock = context.socket(zmq.ROUTER)
 stream = zmqstream.ZMQStream(sock, io_loop=io_loop)
-stream.on_recv_stream(guess)
+stream.on_recv_stream(functools.partial(guess, CITY))
 sock.bind("tcp://%s:%s" % (myip, args.port))
 io_loop.start()
