@@ -40,6 +40,7 @@ Paris
 Dublin
 """.splitlines()
 
+
 def get_cities():
     for c in cities:
         if c:
@@ -50,7 +51,7 @@ def worker(peer):
     seeker = context.socket(zmq.DEALER)
     seeker.connect('tcp://{}'.format(peer))
     poller = zmq.Poller()
-    poller.register(seeker, zmq.POLLIN|zmq.POLLOUT)
+    poller.register(seeker, zmq.POLLIN | zmq.POLLOUT)
     gen = get_cities()
     while True:
         socks = dict(poller.poll(timeout=5000))
@@ -67,7 +68,7 @@ def worker(peer):
             if response == 'CORRECT':
                 print 'Won', city
                 break
-        elif seeker in socks and socks[seeker] == zmq.POLLIN|zmq.POLLOUT:
+        elif seeker in socks and socks[seeker] == zmq.POLLIN | zmq.POLLOUT:
             response = seeker.recv()
             if response == 'CORRECT':
                 print 'Won', city
