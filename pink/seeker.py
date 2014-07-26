@@ -58,8 +58,10 @@ def worker(peer):
             try:
                 city = next(gen)
             except StopIteration:
-                break
-            seeker.send(city)
+                # stop sending suggestion
+                poller.register(seeker, zmq.POLLIN)
+            else:
+                seeker.send(city)
         elif seeker in socks and socks[seeker] == zmq.POLLIN:
             response = seeker.recv()
             if response == 'CORRECT':
@@ -73,8 +75,10 @@ def worker(peer):
             try:
                 city = next(gen)
             except StopIteration:
-                break
-            seeker.send(city)
+                # stop sending suggestion
+                poller.register(seeker, zmq.POLLIN)
+            else:
+                seeker.send(city)
         else:
             print 'timeout'
             break
